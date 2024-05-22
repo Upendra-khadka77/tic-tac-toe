@@ -1,0 +1,135 @@
+/* Sample C++ code */
+#include <iostream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+// Enum representing the possible states of a cell
+enum class CellState {
+    Empty,
+    Cross,
+    Circle
+};
+
+// Class representing the Tic Tac Toe board
+class TicTacToeBoard {
+private:
+    vector<vector<CellState>> board;
+
+public:
+    // Constructor
+    TicTacToeBoard() {
+        // Initialize the board with empty cells
+        board = {
+            {CellState::Empty, CellState::Empty, CellState::Empty},
+            {CellState::Empty, CellState::Empty, CellState::Empty},
+            {CellState::Empty, CellState::Empty, CellState::Empty}
+        };
+    }
+
+    // Member functions
+    void display() {
+        for (const auto& row : board) {
+            for (const auto& cell : row) {
+                char symbol;
+                switch (cell) {
+                    case CellState::Empty:
+                        symbol = '-';
+                        break;
+                    case CellState::Cross:
+                        symbol = 'X';
+                        break;
+                    case CellState::Circle:
+                        symbol = 'O';
+                        break;
+                }
+                cout << symbol << " ";
+            }
+            cout << endl;
+        }
+    }
+
+    bool placePiece(int row, int col, CellState state) {
+        if (row < 0 || row >= 3 || col < 0 || col >= 3 || board[row][col] != CellState::Empty) {
+            return false; // Invalid move
+        }
+        board[row][col] = state;
+        return true; // Valid move
+    }
+
+    bool checkWin(CellState state) {
+        // Check rows
+        for (int i = 0; i < 3; ++i) {
+            if (board[i][0] == state && board[i][1] == state && board[i][2] == state) {
+                return true;
+            }
+        }
+        // Check columns
+        for (int j = 0; j < 3; ++j) {
+            if (board[0][j] == state && board[1][j] == state && board[2][j] == state) {
+                return true;
+            }
+        }
+        // Check diagonals
+        if ((board[0][0] == state && board[1][1] == state && board[2][2] == state) ||
+            (board[0][2] == state && board[1][1] == state && board[2][0] == state)) {
+            return true;
+        }
+        return false;
+    }
+
+    bool isBoardFull() {
+        for (const auto& row : board) {
+            for (const auto& cell : row) {
+                if (cell == CellState::Empty) {
+                    return false; // Board is not full
+                }
+            }
+        }
+        return true; // Board is full
+    }
+};
+
+// Class representing the Tic Tac Toe game
+class TicTacToeGame {
+private:
+    TicTacToeBoard board;
+    CellState currentPlayer;
+
+public:
+    // Constructor
+    TicTacToeGame() : currentPlayer(CellState::Cross) {}
+
+    // Member functions
+    void play() {
+        int row, col;
+        while (true) {
+            cout << "Player " << (currentPlayer == CellState::Cross ? "X" : "O") << "'s turn.\n";
+            board.display();
+            cout << "Enter row and column (0-2): ";
+            cin >> row >> col;
+            if (board.placePiece(row, col, currentPlayer)) {
+                if (board.checkWin(currentPlayer)) {
+                    cout << "Player " << (currentPlayer == CellState::Cross ? "X" : "O") << " wins!\n";
+                    break;
+                } else if (board.isBoardFull()) {
+                    cout << "It's a draw!\n";
+                    break;
+                }
+                currentPlayer = (currentPlayer == CellState::Cross) ? CellState::Circle : CellState::Cross;
+            } else {
+                cout << "Invalid move. Try again.\n";
+            }
+        }
+        board.display();
+    }
+};
+
+int main()
+ {
+    TicTacToeGame game;
+    game.play();
+ return 0;
+
+}
